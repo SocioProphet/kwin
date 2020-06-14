@@ -272,6 +272,9 @@ public:
     bool wantsInput() const override;
     void takeFocus() override;
     bool supportsWindowRules() const override;
+    bool followsParent() const;
+    QSize followsParentSize() const;
+    quint32 followsParentSerial() const;
 
 Q_SIGNALS:
     /**
