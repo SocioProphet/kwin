@@ -56,6 +56,8 @@ public:
     qreal serial;
 };
 
+class XdgPopupClient;
+
 class XdgSurfaceClient : public WaylandClient
 {
     Q_OBJECT
@@ -85,6 +87,8 @@ public:
     QRect clientGeometry() const;
     bool isClosing() const;
     bool isHidden() const;
+    void bindPopup(XdgPopupClient *client);
+    void unbindPopup(XdgPopupClient *client);
 
 protected:
     void addDamage(const QRegion &damage) override;
@@ -113,11 +117,13 @@ private:
     void internalHide();
     void cleanGrouping();
     void cleanTabBox();
+    void handleBoundPopups();
 
     KWaylandServer::XdgSurfaceInterface *m_shellSurface;
     QTimer *m_configureTimer;
     QQueue<XdgSurfaceConfigure *> m_configureEvents;
     QScopedPointer<XdgSurfaceConfigure> m_lastAcknowledgedConfigure;
+    QList<QPointer<XdgPopupClient>> m_boundPopups;
     QRect m_windowGeometry;
     QRect m_requestedFrameGeometry;
     QRect m_bufferGeometry;
@@ -275,6 +281,7 @@ public:
     bool followsParent() const;
     QSize followsParentSize() const;
     quint32 followsParentSerial() const;
+    void relayout();
 
 protected:
     bool acceptsFocus() const override;
@@ -282,6 +289,7 @@ protected:
 
 private:
     void handleGrabRequested(KWaylandServer::SeatInterface *seat, quint32 serial);
+    void handlePositionerBindings();
     void reposition(KWaylandServer::XdgPositioner positioner, quint32 token);
     void initialize();
 
