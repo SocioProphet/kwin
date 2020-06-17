@@ -56,7 +56,6 @@ public:
     qreal serial;
 };
 
-
 class XdgSurfaceClient : public WaylandClient
 {
     Q_OBJECT
@@ -273,9 +272,6 @@ public:
     bool wantsInput() const override;
     void takeFocus() override;
     bool supportsWindowRules() const override;
-    bool followsParent() const;
-    QSize followsParentSize() const;
-    quint32 followsParentSerial() const;
     void relayout();
 
 protected:
