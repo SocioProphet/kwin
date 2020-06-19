@@ -273,6 +273,7 @@ public:
     void takeFocus() override;
     bool supportsWindowRules() const override;
     void relayout();
+    bool stateCompare() const override;
 
 protected:
     bool acceptsFocus() const override;
@@ -286,6 +287,7 @@ private:
 
     KWaylandServer::XdgPopupInterface *m_shellSurface;
     bool m_haveExplicitGrab = false;
+    mutable bool m_pendingRelayout = false;
 };
 
 } // namespace KWin
