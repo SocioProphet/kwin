@@ -107,15 +107,6 @@ void Integration::initialize()
                 }
             }
         );
-        connect(qApp->inputMethod(), &QInputMethod::visibleChanged, this,
-            [] {
-                if (qApp->inputMethod()->isVisible()) {
-                    if (QWindow *w = VirtualKeyboard::self()->inputPanel()) {
-                        QWindowSystemInterface::handleWindowActivated(w, Qt::ActiveWindowFocusReason);
-                    }
-                }
-            }
-        );
     }
 }
 

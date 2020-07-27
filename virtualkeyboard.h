@@ -44,16 +44,13 @@ public:
     void init();
 
     bool event(QEvent *e) override;
-    bool eventFilter(QObject *o, QEvent *event) override;
-
-    QWindow *inputPanel() const;
 
 Q_SIGNALS:
     void enabledChanged(bool enabled);
+    void hide();
+    void show();
 
 private:
-    void show();
-    void hide();
     void setEnabled(bool enable);
     void updateSni();
     void updateInputPanelState();
@@ -61,7 +58,6 @@ private:
 
     bool m_enabled = false;
     KStatusNotifierItem *m_sni = nullptr;
-    QScopedPointer<QQuickView> m_inputWindow;
     QPointer<AbstractClient> m_inputSurface;
     QPointer<AbstractClient> m_trackedClient;
     // If a surface loses focus immediately after being resized by the keyboard, don't react to it to avoid resize loops
