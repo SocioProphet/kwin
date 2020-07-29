@@ -48,6 +48,7 @@ public:
     void killWindow() override;
     QByteArray windowRole() const override;
 
+    void updateDepth();
     void setCaption(const QString &caption);
 
 protected:
