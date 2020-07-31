@@ -51,7 +51,7 @@ InputPanelV1Client::InputPanelV1Client(KWaylandServer::InputPanelSurfaceV1Interf
 
 void InputPanelV1Client::showOverlayPanel()
 {
-    m_output = nullptr;
+    setOutput(nullptr);
     m_mode = Overlay;
     reposition();
 }
@@ -60,9 +60,21 @@ void InputPanelV1Client::showTopLevel(KWaylandServer::OutputInterface *output, K
 {
     Q_UNUSED(position);
     m_mode = Toplevel;
-    m_output = output;
+    setOutput(output);
     reposition();
 }
+
+QSize orientateSize(OutputInterface *output)
+{
+    const QSize size = output->pixelSize();
+    const auto transform = output->transform();
+    if (transform == OutputInterface::Transform::Rotated90 || transform == OutputInterface::Transform::Rotated270 ||
+            transform == OutputInterface::Transform::Flipped90 || transform == OutputInterface::Transform::Flipped270) {
+        return size.transposed();
+    }
+    return size;
+}
+
 
 void KWin::InputPanelV1Client::reposition()
 {
@@ -74,8 +86,9 @@ void KWin::InputPanelV1Client::reposition()
                 if (!panelSize.isValid() || panelSize.isEmpty())
                     return;
 
+                const QSize outputSize = orientateSize(m_output);
                 QRect geo(m_output->globalPosition(), panelSize);
-                geo.translate((m_output->pixelSize().width() - panelSize.width())/2, m_output->pixelSize().height() - panelSize.height());
+                geo.translate((outputSize.width() - panelSize.width())/2, outputSize.height() - panelSize.height());
                 setFrameGeometry(geo);
             }
         }   break;
@@ -140,3 +153,18 @@ void InputPanelV1Client::hideClient(bool hide)
     }
 }
 
+void InputPanelV1Client::setOutput(KWaylandServer::OutputInterface* output)
+{
+    if (m_output) {
+        disconnect(output, nullptr, this, nullptr);
+    }
+    m_output = output;
+    if (output) {
+        connect(output, &OutputInterface::physicalSizeChanged, this, &InputPanelV1Client::reposition);
+        connect(output, &OutputInterface::globalPositionChanged, this, &InputPanelV1Client::reposition);
+        connect(output, &OutputInterface::pixelSizeChanged, this, &InputPanelV1Client::reposition);
+        connect(output, &OutputInterface::scaleChanged, this, &InputPanelV1Client::reposition);
+        connect(output, &OutputInterface::currentModeChanged, this, &InputPanelV1Client::reposition);
+        connect(output, &OutputInterface::transformChanged, this, &InputPanelV1Client::reposition);
+    }
+}

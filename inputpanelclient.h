@@ -80,6 +80,7 @@ private:
     void showTopLevel(KWaylandServer::OutputInterface *output, KWaylandServer::InputPanelSurfaceV1Interface::Position position);
     void showOverlayPanel();
     void reposition();
+    void setOutput(KWaylandServer::OutputInterface* output);
 
     QPointer<KWaylandServer::OutputInterface> m_output;
     Mode m_mode = Toplevel;
